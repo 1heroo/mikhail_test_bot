@@ -1,9 +1,9 @@
 import asyncio
 import uuid
 import httpx
-from logger import setup_logger
+from src.logger import setup_logger
 from traceback import format_exc
-from api import fetch_jwt_token, fetch_bot_id_and_viewer_payload
+from src.api import fetch_jwt_token, fetch_bot_id_and_viewer_payload
 logger = setup_logger("viewer")
 
 
@@ -20,10 +20,13 @@ class Viewer:
         self.headers = {"Authorization": None}
         self.proxy = proxy
         self._models: set[str] = set()
-        self.payload = {**payload, "uniq": str(uuid.uuid4())}
+        self.payload = payload
         self.started = False
         self.client = httpx.AsyncClient(proxies=self.proxy)
         self.load = 0  # Track the number of models the bot is handling
+
+        if not payload.get('uniq'):
+            self.payload.update({"uniq": str(uuid.uuid4())})
 
     async def start(self) -> None:
         """Start the viewer loop."""
@@ -38,7 +41,7 @@ class Viewer:
                 logger.error(f"Error in main viewer loop, but will retry: {e}")
                 await asyncio.sleep(5)
 
-    async def _keep_loop_alive(self, model_id: str):
+    async def _keep_loop_alive(self, model_id: str) -> None:
         for attempt in range(5):
             try:
                 await asyncio.sleep(5)
@@ -125,3 +128,31 @@ class Viewer:
         await asyncio.sleep(10)
         if self.client:
             await self.client.aclose()
+
+    def serialize(self) -> dict:
+        """Сериализация объекта Viewer в словарь"""
+        return {
+            "session_id": self.session_id,
+            "bot_id": self.bot_id,
+            "headers": self.headers,
+            "proxy": self.proxy,
+            "models": list(self._models),  # Множество переводим в список
+            "payload": self.payload,
+            "started": self.started,
+            "load": self.load,
+        }
+
+    @classmethod
+    def deserialize(cls, data: dict):
+        """Десериализация объекта Viewer из словаря"""
+        viewer = cls(
+            session_id=data["session_id"],
+            bot_id=data["bot_id"],
+            proxy=data["proxy"],
+            payload=data["payload"]
+        )
+        viewer.headers = data.get("headers", {})
+        viewer._models = set(data.get("models", []))
+        viewer.started = data.get("started", False)
+        viewer.load = data.get("load", 0)
+        return viewer

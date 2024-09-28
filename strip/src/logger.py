@@ -8,4 +8,7 @@ def setup_logger(name):
     formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)
     logger.addHandler(handler)
+
+    # httpx
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     return logger

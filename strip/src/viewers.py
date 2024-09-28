@@ -1,6 +1,6 @@
 import aioconsole
 import asyncio
-from bot_manager import BotManager
+from src.bot_manager import BotManager
 
 
 async def viewers(cookies: list, proxies: list):
@@ -20,8 +20,8 @@ async def viewers(cookies: list, proxies: list):
 
 
 if __name__ == "__main__":
-    with open("cookies.txt") as f:
+    with open("../cookies.txt") as f:
         cookies = f.read().splitlines()
-    with open("proxies.txt") as f:
+    with open("../proxies.txt") as f:
         proxies = f.read().splitlines()
     asyncio.run(viewers(cookies, proxies))

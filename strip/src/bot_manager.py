@@ -1,8 +1,8 @@
 import asyncio
 import httpx
-from logger import setup_logger
-from api import fetch_bot_id_and_viewer_payload, fetch_model_ids
-from viewer import Viewer
+from src.logger import setup_logger
+from src.api import fetch_bot_id_and_viewer_payload, fetch_model_ids
+from src.viewer import Viewer
 
 logger = setup_logger("bot_manager")
 

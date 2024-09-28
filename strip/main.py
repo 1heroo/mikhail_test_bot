@@ -1,8 +1,12 @@
 from typing import Dict, List, Optional
-from fastapi import FastAPI, HTTPException, BackgroundTasks
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from bot_manager import BotManager
+from src.bot_manager import BotManager
 import asyncio
+
+from src.celery_stuff import app as celery_tasks
+from src.celery_stuff.app import app as celery_app
+from src.viewer import Viewer
 
 app = FastAPI()
 
@@ -17,7 +21,7 @@ class ModelsConfig(BaseModel):
 
 
 # Use Optional to indicate that viewers can be None
-viewers: Optional[List] = None
+viewers: Optional[List[Viewer]] = None
 queue = asyncio.Queue()
 
 
@@ -60,31 +64,49 @@ async def update_models(config: ModelsConfig):
     await BotManager.update_models(viewers, config.models)
 
 
-@app.post("/api/stop_bots")
-async def stop_bots():
-    """Endpoint to stop all running bots."""
-    await queue.put((stop_existing_bots, []))
-    return {"message": "Stop request queued."}
-
-
 @app.post("/api/launch_bots")
 async def launch_bots_endpoint(config: BotsConfig):
     """Endpoint to launch new bots with the provided configuration."""
-    await queue.put((launch_bots, [config]))
+    global viewers
+
+    async with celery_app.setup():
+        await celery_tasks.launch_bots.delay(config.cookies, proxies=config.proxies)
+        viewers = True
     return {"message": "Launch request queued."}
 
 
 @app.post("/api/update_models")
 async def update_models_endpoint(config: ModelsConfig):
     """Endpoint to update models for the running bots."""
-    await queue.put((update_models, [config]))
+    if viewers is None:
+        raise HTTPException(status_code=400, detail="No bots are currently running.")
+
+    async with celery_app.setup():
+        await celery_tasks.update_models.delay(config.models)
     return {"message": "Update request queued."}
+
+
+@app.post("/api/stop_bots")
+async def stop_bots():
+    """Endpoint to stop all running bots."""
+
+    global viewers
+    if viewers is None:
+        return {'message': 'there\'s not bots to force stop'}
+
+    async with celery_app.setup():
+        await celery_tasks.stop_bots.delay()
+        viewers = None
+
+    return {"message": "Stop request queued."}
 
 
 @app.get('/api/get-tasks-size')
 async def get_tasks_size():
     global viewers
-    return {'message': f'current tasks: {queue.qsize()}, current viewers len: {len(viewers)}'}
+
+    viewers = [] if viewers is None else viewers
+    return {'message': f'current tasks, current viewers len: {len(viewers)}'}
 
 
 if __name__ == "__main__":

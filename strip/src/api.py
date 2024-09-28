@@ -1,7 +1,7 @@
 import httpx
 import time
 import asyncio
-from logger import setup_logger
+from src.logger import setup_logger
 from traceback import format_exc
 
 logger = setup_logger("api")
@@ -78,7 +78,6 @@ async def fetch_bot_id_and_viewer_payload(
                         "csrfNotifyTimestamp": json["csrfNotifyTimestamp"],
                         "tabId": json["tabId"],
                     }
-
 
 
 async def fetch_model_ids(nicks: list) -> list:
