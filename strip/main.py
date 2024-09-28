@@ -101,14 +101,6 @@ async def stop_bots():
     return {"message": "Stop request queued."}
 
 
-@app.get('/api/get-tasks-size')
-async def get_tasks_size():
-    global viewers
-
-    viewers = [] if viewers is None else viewers
-    return {'message': f'current tasks, current viewers len: {len(viewers)}'}
-
-
 if __name__ == "__main__":
     import uvicorn
 
