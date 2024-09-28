@@ -67,7 +67,6 @@ class Viewer:
 
         try:
             while self.started:
-                await asyncio.sleep(15)
                 if not self.started:
                     break
 
@@ -77,6 +76,7 @@ class Viewer:
                         break
 
                     asyncio.create_task(self._keep_loop_alive(model_id=model_id))
+                await asyncio.sleep(30)
 
         except httpx.CloseError:
             logger.warning(f"Connection closed for user {self.bot_id}.")
