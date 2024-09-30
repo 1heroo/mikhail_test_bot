@@ -11,6 +11,7 @@ async def fetch_jwt_token(client: httpx.AsyncClient, session_id: str) -> str:
     domains = {
         "https://stripchatgirls.com": "stripchatgirls_com",
         "https://stripchat.global": "stripchat_global",
+        "https://stripchat.com": "stripchat_com",
     }
 
     for domain, cookie_name in domains.items():
@@ -57,6 +58,7 @@ async def fetch_bot_id_and_viewer_payload(
     domains = {
         "https://stripchatgirls.com": "stripchatgirls_com",
         "https://stripchat.global": "stripchat_global",
+        "https://stripchat.com": "stripchat_com",
     }
 
     for domain, cookie_name in domains.items():
