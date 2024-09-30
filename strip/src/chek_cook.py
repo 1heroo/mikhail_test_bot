@@ -36,9 +36,10 @@ def write_valid_cookies(file_path: str, valid_cookies: list):
         for cookie in valid_cookies:
             file.write(f"{cookie}\n")
 
+
 # Основная функция
 async def main():
-    cookies_file = "../cookies.txt"
+    cookies_file = "cookies.txt"
 
     # Читаем куки из файла
     cookies = read_cookies(cookies_file)
