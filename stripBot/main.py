@@ -21,7 +21,7 @@ from states import CurrentState, cookies, proxies
 from callback_datas import MainMenu, Schedule
 from datetime import datetime, timedelta
 from os import getenv
-from dotenv import load_dotenv
+from decouple import config
 
 from aiogram import Bot, Dispatcher, Router, F
 from aiogram.filters import CommandStart
@@ -35,9 +35,8 @@ from aiogram.types import (
 from aiogram.types.keyboard_button import KeyboardButton
 from aiogram.fsm.context import FSMContext
 
-load_dotenv()
 
-TOKEN = getenv("MIHAIL_BOT_TOKEN")
+TOKEN = config("MIHAIL_BOT_TOKEN")
 
 dp = Dispatcher()
 router = Router()
