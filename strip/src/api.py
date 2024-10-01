@@ -9,8 +9,6 @@ logger = setup_logger("api")
 
 async def fetch_jwt_token(client: httpx.AsyncClient, session_id: str) -> str:
     domains = {
-        "https://stripchatgirls.com": "stripchatgirls_com",
-        "https://stripchat.global": "stripchat_global",
         "https://stripchat.com": "stripchat_com",
     }
 
@@ -22,7 +20,7 @@ async def fetch_jwt_token(client: httpx.AsyncClient, session_id: str) -> str:
                     response = await client.get(
                         f"{domain}/api/front/v3/config/dynamic?uniq={int(time.time() * 1000)}",
                         cookies={f"{cookie_name}_sessionId": session_id},
-                        timeout=20,  # увеличенный тайм-аут
+                        timeout=40,  # увеличенный тайм-аут
                     )
                     response.raise_for_status()  # Вызвать исключение для статусов 4xx/5xx
                 except httpx.HTTPStatusError as e:
@@ -56,8 +54,6 @@ async def fetch_bot_id_and_viewer_payload(
     client: httpx.AsyncClient, session_id: str
 ) -> tuple:
     domains = {
-        "https://stripchatgirls.com": "stripchatgirls_com",
-        "https://stripchat.global": "stripchat_global",
         "https://stripchat.com": "stripchat_com",
     }
 
