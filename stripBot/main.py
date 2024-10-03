@@ -169,7 +169,7 @@ async def short_list_handler(callback: CallbackQuery, state: FSMContext) -> None
     }
 
     response = await client.get(
-        "https://stripchatgirls.com/girls/popular", headers=headers
+        "https://stripchat.com/girls/popular", headers=headers
     )
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -190,7 +190,7 @@ async def short_list_handler(callback: CallbackQuery, state: FSMContext) -> None
             "Онлайн"
             if (
                 await client.get(
-                    f"https://stripchatgirls.com/api/front/v2/users/username/{nick}"
+                    f"https://stripchat.com/api/front/v2/users/username/{nick}"
                 )
             ).json()["item"]["isOnline"]
             else "Не онлайн"
