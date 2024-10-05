@@ -33,9 +33,11 @@ class BotManager:
     ) -> list[Viewer | None] | list[Viewer]:
         """Launch multiple bots using the provided cookies and proxies."""
         logger.debug(f"Launching {len(cookies)} bots")
+        min_len = min(len(cookies), len(proxies))
+
         tasks = [
             BotManager.create_bot(cookies.pop(), proxies.pop())
-            for _ in range(len(proxies))
+            for _ in range(min_len)
         ]
         viewers = await asyncio.gather(*tasks)
         clean_viewers = [viewer for viewer in viewers if viewer is not None]
