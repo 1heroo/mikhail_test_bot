@@ -12,7 +12,7 @@ proxies = open("proxies.txt").read().splitlines()
 print("Обновление моделей...")
 requests.post(
     "http://127.0.0.1:8000/api/update_models", json={"models": {
-        "baby_monster1": 0,
+        "Mia_komio": 0,
     }}
 )
 
